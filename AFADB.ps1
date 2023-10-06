@@ -1,4 +1,6 @@
-﻿$ErrorActionPreference = "Stop"
+﻿# AFADB.ps1 - ADB Installer
+# Licensed under MIT. Check LICENSE for details
+$ErrorActionPreference = "Stop"
 Add-Type -AssemblyName PresentationFramework
 
 function New-TemporaryDirectory {
@@ -22,14 +24,16 @@ function Add-ToPath {
     )
 
     $dir = (Resolve-Path $dir)
-    if (!($current_path.Contains($dir))) {
+    $current_path = [Environment]::GetEnvironmentVariable("PATH", $path_target)
 
-        # append dir to path
-        [Environment]::SetEnvironmentVariable("PATH", $current_path + ";$dir", $path_target)
-        echo "Added $dir to PATH"
+    if ($current_path.Contains($dir)) {
+        echo "$dir is already in PATH"
         return
     }
-    echo "$dir is already in PATH"
+
+    [Environment]::SetEnvironmentVariable("PATH", $current_path + ";$dir", $path_target)
+    echo "Added $dir to PATH"
+    return
 }
 
 function Show-EndMessage {
@@ -41,16 +45,13 @@ function Show-EndMessage {
 }
 
 #decides on installation directory and path variable to update.
-#try restarting as admin if we don't have admin. on faliure it switches to installation in user dir.
 if(Check-AdminRights == False) {
     echo "No admin rights granted. Installing in user directory instead."
     $install_dir = $env:USERPROFILE
-    $current_path = [Environment]::GetEnvironmentVariable("PATH", [System.EnvironmentVariableTarget]::User)
     $path_target = [EnvironmentVariableTarget]::User
 } else {
     echo "Admin rights OK. Installing systemwide."
     $install_dir = "C:\"
-    $current_path = [Environment]::GetEnvironmentVariable("PATH", [System.EnvironmentVariableTarget]::Machine)
     $path_target = [EnvironmentVariableTarget]::Machine
 }
 
