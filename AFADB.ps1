@@ -66,11 +66,9 @@ if(Check-AdminRights == False) {
     $path_target = [EnvironmentVariableTarget]::Machine
 }
 
-
-$zip_download_name = "platformtools.zip"
 $download_url = "https://dl.google.com/android/repository/platform-tools-latest-windows.zip"
+$zip_path = Join-Path (New-TemporaryDirectory) "platformtools.zip"
 $webclient = New-Object Net.WebClient
-$tmpdir = New-TemporaryDirectory
 #this is the name of the directory inside the archive we get from google. only change this if the api gets changed.
 $extracted_dirname = "platform-tools"
 $finalpath = (Join-Path $install_dir $extracted_dirname)
@@ -79,7 +77,6 @@ $finalpath = (Join-Path $install_dir $extracted_dirname)
 if(Test-Path $finalpath) { Ask-OverwriteConfirmation }
 
 echo "Downloading from $download_url"
-$zip_path = Join-Path $tmpdir $zip_download_name
 $webclient.DownloadFile("$download_url",$zip_path)
 
 echo "Extracting $zip_path into $install_dir"
