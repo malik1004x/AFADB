@@ -44,6 +44,17 @@ function Show-EndMessage {
     $msg_result = [System.Windows.MessageBox]::Show($msg_body,$msg_title,$msg_buttons,$msg_icon)
 }
 
+function Ask-OverwriteConfirmation {
+    $msg_body = "The installation path already exists. If it contains files of the same names, they will be overwritten. Continue?"
+    $msg_icon = [System.Windows.MessageBoxImage]::Warning
+    $msg_buttons = [System.Windows.MessageBoxButton]::YesNo
+    $msg_title = "Overwrite warning"
+    $msg_result = [System.Windows.MessageBox]::Show($msg_body,$msg_title,$msg_buttons,$msg_icon)
+    if($msg_result -eq "No"){
+        exit
+    }  
+}
+
 #decides on installation directory and path variable to update.
 if(Check-AdminRights == False) {
     echo "No admin rights granted. Installing in user directory instead."
@@ -65,18 +76,7 @@ $extracted_dirname = "platform-tools"
 $finalpath = (Join-Path $install_dir $extracted_dirname)
 
 #check if installation directory already exists. ask user if they wanna overwrite it.
-if(Test-Path $finalpath) {
-
-    $msg_body = "The installation path already exists. If it contains files of the same names, they will be overwritten. Continue?"
-    $msg_icon = [System.Windows.MessageBoxImage]::Warning
-    $msg_buttons = [System.Windows.MessageBoxButton]::YesNo
-    $msg_title = "Overwrite warning"
-    $msg_result = [System.Windows.MessageBox]::Show($msg_body,$msg_title,$msg_buttons,$msg_icon)
-    
-    if($msg_result -eq "No"){
-        exit
-    }  
- }
+if(Test-Path $finalpath) { Ask-OverwriteConfirmation }
 
 echo "Downloading from $download_url"
 $zip_path = Join-Path $tmpdir $zip_download_name
