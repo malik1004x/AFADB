@@ -79,9 +79,8 @@ if(Test-Path $finalpath) {
  }
 
 echo "Downloading from $download_url"
-$webclient.DownloadFile("$download_url","$tmpdir\$zip_download_name")
-
 $zip_path = Join-Path $tmpdir $zip_download_name
+$webclient.DownloadFile("$download_url",$zip_path)
 
 echo "Extracting $zip_path into $install_dir"
 Expand-Archive -LiteralPath $zip_path -DestinationPath $install_dir -Force
