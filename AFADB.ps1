@@ -1,4 +1,5 @@
-﻿Add-Type -AssemblyName PresentationFramework
+﻿$ErrorActionPreference = "Stop"
+Add-Type -AssemblyName PresentationFramework
 
 function New-TemporaryDirectory {
     $parent = [System.IO.Path]::GetTempPath()
